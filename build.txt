@@ -1,0 +1,1 @@
+to build and run use ctrl+shift+b
