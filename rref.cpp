@@ -16,6 +16,10 @@ int main() {
             }
         }
 
+        void setElement(int index, double value) {
+            elements[index] = value;
+        }
+
         double getElement(int index) {
             return elements[index];
         }
@@ -63,11 +67,20 @@ int main() {
 
         void printMatrix() {
             for (int row = 0; row < numberOfRows; ++row) {
+                std::cout << "[\t";
                 for (int column = 0; column < numberOfCols; ++column) {
                     std::cout << matrix[row].getElement(column) << "\t";
                 }
-                std::cout << std::endl << std::endl;
+                std::cout << "]" << std::endl;
             }
+        }
+
+        int determineColumn() {
+            // firstly need to assume all columns to the left of it are reduced
+            // then need to know what row the previous leading value is on
+            // then move 1 row down in tghat column see if theres a value
+            // if there is reduce and eliminate
+            // if not keep checking beneath until there is and swap
         }
 
         void eliminate(int reducedRow) {
@@ -89,7 +102,8 @@ int main() {
                     for (int col = 0; col < numberOfCols; ++col) {
                         double reducedValue =
                             matrix[reducedRow].getElement(col) * leadingValue;
-                        matrix[row].getElement(col) -= reducedValue;
+                        double newValue = matrix[row].getElement(col) - reducedValue;
+                        matrix[row].setElement(col, newValue);
                     }
                 }
             }
@@ -105,6 +119,8 @@ int main() {
    private:
     int numberOfRows;
     int numberOfCols;
+    int reducedRows = 0;
+    int reducedColumns = 0;
     std::vector<Row> matrix;
 };
 
