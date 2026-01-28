@@ -17,10 +17,16 @@ int main() {
         }
 
         void setElement(int index, double value) {
+            if (value == -0) {
+                value = 0;
+            }
             elements[index] = value;
         }
 
         double getElement(int index) {
+            if (elements[index] == -0) {
+                elements[index] = 0;
+            }
             return elements[index];
         }
 
@@ -94,7 +100,7 @@ int main() {
                             reducedColumns++;
                             break;
                         } else {
-                            std::cout << "start of row swap";
+                            // std::cout << "start of row swap";
                             topRow = false;
                             currentRow = row;
                         }
@@ -105,7 +111,7 @@ int main() {
                         if (matrix[row].getElement(column) != 0) {
                             // swap rows reset the for loop variable to
                             // currentRow
-                            std::cout << "swapping row";
+                            // std::cout << "swapping row";
                             Row temporaryRow = matrix[currentRow];
                             matrix[currentRow] = matrix[row];
                             matrix[row] = temporaryRow;
@@ -115,7 +121,7 @@ int main() {
                         } else {
                             // try further down unless at the end of rows
                             // no values were non zero go to next column
-                            std::cout << "no swap possible";
+                            // std::cout << "no swap possible";
                             // should only break if at the end of the rows
                             
                         }
@@ -160,7 +166,7 @@ int main() {
         std::vector<Row> matrix;
     };
 
-    Matrix test(4, 5);
+    Matrix test(5, 6);
     test.createMatrix();
     test.printMatrix();
     std::cout << std::endl;
