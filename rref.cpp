@@ -34,8 +34,8 @@ int main() {
         }
 
         double getLeadingValue() {
-            int leadingCol = getLeadingColumn();
-            return elements[leadingCol];
+            int leadingColumn = getLeadingColumn();
+            return elements[leadingColumn];
         }
 
         void reduce(double reducer) {
@@ -75,12 +75,53 @@ int main() {
             }
         }
 
-        int determineColumn() {
+        void reduce() {
             // firstly need to assume all columns to the left of it are reduced
             // then need to know what row the previous leading value is on
             // then move 1 row down in tghat column see if theres a value
             // if there is reduce and eliminate
             // if not keep checking beneath until there is and swap
+            for (int column = reducedColumns; column < numberOfCols; ++column) {
+                bool topRow = true;
+                int currentRow = reducedRows;
+                for (int row = reducedRows; row < numberOfRows; ++row) {
+                    if (topRow) {
+                        if (matrix[row].getElement(column) != 0) {
+                            // reduce and then eliminate the rest of the rows
+                            matrix[row].reduce(matrix[row].getLeadingValue());
+                            eliminate(row);
+                            reducedRows++;
+                            reducedColumns++;
+                            break;
+                        } else {
+                            std::cout << "start of row swap";
+                            topRow = false;
+                            currentRow = row;
+                        }
+                    }
+                    // non top row
+                    else {
+                        // non zero
+                        if (matrix[row].getElement(column) != 0) {
+                            // swap rows reset the for loop variable to
+                            // currentRow
+                            std::cout << "swapping row";
+                            Row temporaryRow = matrix[currentRow];
+                            matrix[currentRow] = matrix[row];
+                            matrix[row] = temporaryRow;
+                            row = currentRow -
+                                  1;  // -1 because of for loop increment
+                                  topRow = true;
+                        } else {
+                            // try further down unless at the end of rows
+                            // no values were non zero go to next column
+                            std::cout << "no swap possible";
+                            // should only break if at the end of the rows
+                            
+                        }
+                    }
+                }
+            }
         }
 
         void eliminate(int reducedRow) {
@@ -99,32 +140,30 @@ int main() {
                     continue;
                 } else {
                     double leadingValue = matrix[row].getElement(index);
-                    for (int col = 0; col < numberOfCols; ++col) {
+                    for (int column = 0; column < numberOfCols; ++column) {
                         double reducedValue =
-                            matrix[reducedRow].getElement(col) * leadingValue;
-                        double newValue = matrix[row].getElement(col) - reducedValue;
-                        matrix[row].setElement(col, newValue);
+                            matrix[reducedRow].getElement(column) *
+                            leadingValue;
+                        double newValue =
+                            matrix[row].getElement(column) - reducedValue;
+                        matrix[row].setElement(column, newValue);
                     }
                 }
             }
         }
-    
 
-    void
-    reduce() {
-        // this is function where it will run the row reduce function but it
-        // needs to determine if leading value is 0 and stuff
-    }
+       private:
+        int numberOfRows;
+        int numberOfCols;
+        int reducedRows = 0;
+        int reducedColumns = 0;
+        std::vector<Row> matrix;
+    };
 
-   private:
-    int numberOfRows;
-    int numberOfCols;
-    int reducedRows = 0;
-    int reducedColumns = 0;
-    std::vector<Row> matrix;
-};
-
-Matrix test(3, 4);
-test.createMatrix();
-test.printMatrix();
+    Matrix test(4, 5);
+    test.createMatrix();
+    test.printMatrix();
+    std::cout << std::endl;
+    test.reduce();
+    test.printMatrix();
 }
