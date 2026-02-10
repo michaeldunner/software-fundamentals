@@ -1,5 +1,9 @@
 #include <iostream>
 
+void printAsterisk();
+void printBlank();
+void printNewLine();
+
 int main() {
     // 1
     int rows;
@@ -45,6 +49,65 @@ int main() {
         for (int j = 0; j < years; j++) {
             value *= interestRate;
         }
-        std::cout << "At " << i << "% interest, the value becomes $" << value << std::endl;
-    }   
+        std::cout << "At " << i << "% interest, the value becomes $" << value
+                  << std::endl;
+    }
+
+    // 4
+    // checks each hypotenuse
+    for (int hypotenuse = 1; hypotenuse <= 500; hypotenuse++) {
+        // checks each side1
+        for (int side1 = 1; side1 < hypotenuse; side1++) {
+            for (int side2 = 1; side2 < hypotenuse; side2++) {
+                if (side1 * side1 + side2 * side2 == hypotenuse * hypotenuse) {
+                    std::cout << "Pythagorean triple: " << side1 << ", "
+                              << side2 << ", " << hypotenuse << std::endl;
+                    // don't need to check more side2 for this hypotenuse and
+                    // side1
+                    break;
+                }
+            }
+        }
+    }
+
+    // 5
+    int totalRows = 9;
+    for (int row = 1; row <= totalRows; row++) {
+        if (row > totalRows / 2 + 1) {
+            for (int col = 1; col <= totalRows / 2 + row - totalRows; col++) {
+                printBlank();
+            }
+            for (int col = 1; col <= 2 * (totalRows - row) + 1; col++) {
+                printAsterisk();
+            }
+        } else {
+            for (int col = 1; col <= totalRows / 2 + 1 - row; col++) {
+                printBlank();
+            }
+            for (int col = 1; col <= 2 * row - 1; col++) {
+                printAsterisk();
+            }
+        }
+        printNewLine();
+    }
+
+    // 6
+    double pi = 0.0;
+    for (int terms = 0; terms < 1000; terms++) {
+        
+            pi += (4.0 / (2 * terms + 1)) * (terms % 2 == 0 ? 1 : -1);
+        std::cout << "Term " << terms + 1 << " " << pi << std::endl;
+    }
+}
+
+void printAsterisk() {
+    std::cout << "*";
+}
+
+void printBlank() {
+    std::cout << " ";
+}
+
+void printNewLine() {
+    std::cout << std::endl;
 }
