@@ -1,9 +1,15 @@
 #include <cmath>
-#include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
 
 double calculateCharges(double hours);
+
+void prime(int number);
+
+void primeNOver2(int number);
+
+void primeSqrt(int number);
 
 bool isEven(int number);
 
@@ -43,31 +49,11 @@ int main() {
     int number;
     std::cout << "Enter a number: ";
     std::cin >> number;
-    bool prime = true;
-    for (int i = 2; i < number; ++i) {
-        if (number % i == 0) {
-            prime = false;
-            break;
-        }
-    }
-    if (prime) {
-        std::cout << number << " is prime" << std::endl;
-    } else {
-        std::cout << number << " is not prime" << std::endl;
-    }
+    prime(number);
 
     // b
     for (int i = 10000; i > 1; --i) {
-        bool prime = true;
-        for (int j = 2; j < (i / 2); ++j) {
-            if (i % j == 0) {
-                prime = false;
-                break;
-            }
-        }
-        if (prime) {
-            std::cout << i << " is prime" << std::endl;
-        }
+        primeNOver2(i);
     }
 
     // you must check a lot of the numbers because there are a lot of prime
@@ -75,17 +61,12 @@ int main() {
 
     // c
     for (int i = 10000; i > 1; --i) {
-        bool prime = true;
-        for (int j = 2; j < std::sqrt(i); ++j) {
-            if (i % j == 0) {
-                prime = false;
-                break;
-            }
-        }
-        if (prime) {
-            std::cout << i << " is prime" << std::endl;
-        }
+        primeSqrt(i);
     }
+
+    // i estimate the improvement to be around 10 times faster because we are
+    // only checking up to the square root of the number instead of half of the
+    // number
 
     // 3
     while (true) {
@@ -158,6 +139,45 @@ double calculateCharges(double hours) {
     return charges;
 }
 
+void prime(int number) {
+    bool isPrime = true;
+    for (int i = 2; i < number; ++i) {
+        if (number % i == 0) {
+            isPrime = false;
+            break;
+        }
+    }
+    if (isPrime) {
+        std::cout << number << " is prime" << std::endl;
+    }
+}
+
+void primeNOver2(int number) {
+    bool isPrime = true;
+    for (int i = 2; i <= (number / 2); ++i) {
+        if (number % i == 0) {
+            isPrime = false;
+            break;
+        }
+    }
+    if (isPrime) {
+        std::cout << number << " is prime" << std::endl;
+    }
+}
+
+void primeSqrt(int number) {
+    bool isPrime = true;
+    for (int i = 2; i <= std::sqrt(number); ++i) {
+        if (number % i == 0) {
+            isPrime = false;
+            break;
+        }
+    }
+    if (isPrime) {
+        std::cout << number << " is prime" << std::endl;
+    }
+}
+
 bool isEven(int number) {
     return number % 2 == 0;
 }
@@ -190,11 +210,10 @@ void printPerfect(int number) {
 
 bool flip() {
     if (std::rand() % 2 == 0) {
-            std::cout << "Heads" << std::endl;
-            return true;
-        }
-        else {
-            std::cout << "Tails" << std::endl;
-            return false;
-        }
+        std::cout << "Heads" << std::endl;
+        return true;
+    } else {
+        std::cout << "Tails" << std::endl;
+        return false;
+    }
 }
