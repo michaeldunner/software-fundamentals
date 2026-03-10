@@ -66,57 +66,87 @@ int main() {
     int minimumAccessibility;
     int bestMove;
 
-    // make 64 moves
-    for (int i = 1; i <= 64; i++) {
-        // mark current position
-        // if it doesn't = 0 it has already been set and failed to find a move
-        if (board[currentRow][currentColumn] != 0) {
-            std::cout << "Failed to find a move at move " << i << std::endl;
-            break;
-        }
-        board[currentRow][currentColumn] = i;
+    // track successes
+    int successes = 0;
 
-        // board has been set, now change the accessibility of the surrounding
-        // squares by 1
-        for (int j = 0; j < 8; j++) {
-            if (currentRow + vertical[j] >= 0 && currentRow + vertical[j] < 8 &&
-                currentColumn + horizontal[j] >= 0 &&
-                currentColumn + horizontal[j] < 8) {
-                access[currentRow + vertical[j]]
-                      [currentColumn + horizontal[j]] -= 1;
-            }
-        }
+    // 64 starting positions
+    // i made the inner loop first so the outer variable is not i
 
-        // reset minimum accessibility location higher than any possible
-        // accessibility value
-        minimumAccessibility = 9;
+    for (int startingRow = 0; startingRow < 8; startingRow++) {
+        for (int startingColumn = 0; startingColumn < 8; startingColumn++) {
+            board = {0};
+            currentRow = startingRow;
+            currentColumn = startingColumn;
+            access = {2, 3, 4, 4, 4, 4, 3, 2, 3, 4, 6, 6, 6, 6, 4, 3,
+                      4, 6, 8, 8, 8, 8, 6, 4, 4, 6, 8, 8, 8, 8, 6, 4,
+                      4, 6, 8, 8, 8, 8, 6, 4, 4, 6, 8, 8, 8, 8, 6, 4,
+                      3, 4, 6, 6, 6, 6, 4, 3, 2, 3, 4, 4, 4, 4, 3, 2};
 
-        // reset best move to something impossible
-        bestMove = -1;
-
-        // check which move to make using the accessibility array
-        for (int j = 0; j < 8; j++) {
-            if (currentRow + vertical[j] >= 0 && currentRow + vertical[j] < 8 &&
-                currentColumn + horizontal[j] >= 0 &&
-                currentColumn + horizontal[j] < 8 &&
-                board[currentRow + vertical[j]]
-                     [currentColumn + horizontal[j]] == 0) {
-                // move is valid check accessibility
-                if (access[currentRow + vertical[j]]
-                          [currentColumn + horizontal[j]] <
-                    minimumAccessibility) {
-                    // change minimum accessibility
-                    // save the current j as the best move so far
-                    minimumAccessibility =
-                        access[currentRow + vertical[j]]
-                              [currentColumn + horizontal[j]];
-                    bestMove = j;
+            // make 64 moves
+            for (int i = 1; i <= 64; i++) {
+                // mark current position
+                // if it doesn't = 0 it has already been set and failed to find
+                // a move
+                if (board[currentRow][currentColumn] != 0) {
+                    std::cout << "Failed to find a move at move " << i - 1
+                              << std::endl;
+                    break;
                 }
+                board[currentRow][currentColumn] = i;
+                // if this if runs it has succeeded
+                if (i == 64) {
+                    std::cout << "(" << startingRow << "," << startingColumn
+                              << ")" << " was a success!" << std::endl;
+                    successes++;
+                }
+
+                // board has been set, now change the accessibility of the
+                // surrounding squares by 1
+                for (int j = 0; j < 8; j++) {
+                    if (currentRow + vertical[j] >= 0 &&
+                        currentRow + vertical[j] < 8 &&
+                        currentColumn + horizontal[j] >= 0 &&
+                        currentColumn + horizontal[j] < 8) {
+                        access[currentRow + vertical[j]]
+                              [currentColumn + horizontal[j]] -= 1;
+                    }
+                }
+
+                // reset minimum accessibility location higher than any possible
+                // accessibility value
+                minimumAccessibility = 9;
+
+                // reset best move to something impossible
+                bestMove = -1;
+
+                // check which move to make using the accessibility array
+                for (int j = 0; j < 8; j++) {
+                    if (currentRow + vertical[j] >= 0 &&
+                        currentRow + vertical[j] < 8 &&
+                        currentColumn + horizontal[j] >= 0 &&
+                        currentColumn + horizontal[j] < 8 &&
+                        board[currentRow + vertical[j]]
+                             [currentColumn + horizontal[j]] == 0) {
+                        // move is valid check accessibility
+                        if (access[currentRow + vertical[j]]
+                                  [currentColumn + horizontal[j]] <
+                            minimumAccessibility) {
+                            // change minimum accessibility
+                            // save the current j as the best move so far
+                            minimumAccessibility =
+                                access[currentRow + vertical[j]]
+                                      [currentColumn + horizontal[j]];
+                            bestMove = j;
+                        }
+                    }
+                }
+                // assign after the best location is chosen
+                currentRow += vertical[bestMove];
+                currentColumn += horizontal[bestMove];
             }
+            printBoard(board);
         }
-        // assign after the best location is chosen
-        currentRow += vertical[bestMove];
-        currentColumn += horizontal[bestMove];
     }
-    printBoard(board);
+
+    std::cout << "There are " << successes << " possibilities." << std::endl;
 }
