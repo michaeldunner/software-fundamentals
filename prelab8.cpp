@@ -1,4 +1,6 @@
 #include <array>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 void printBoard(std::array<std::array<int, 8>, 8> board) {

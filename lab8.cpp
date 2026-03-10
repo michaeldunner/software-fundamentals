@@ -1,4 +1,6 @@
 #include <array>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
 
 void printBoard(std::array<std::array<int, 8>, 8> board) {
@@ -12,7 +14,7 @@ void printBoard(std::array<std::array<int, 8>, 8> board) {
 }
 
 int main() {
-    // 1
+    // 3
     // define board
     // all 0s by default
     std::array<std::array<int, 8>, 8> board = {0};
@@ -25,32 +27,123 @@ int main() {
     int currentRow = 0;
     int currentColumn = 0;
 
+    // setup random
+    std::srand(std::time(nullptr));
+    int roll;
+
+    // setup flag
+    bool movePossible;
+
     // make 64 moves
     for (int i = 1; i <= 64; i++) {
         // mark current position
-        // if it doesn't = 0 it has already been set and failed to find a move
-        if (board[currentRow][currentColumn] != 0) {
-            std::cout << "Failed to find a move at move " << i << std::endl;
-            break;
-        }
         board[currentRow][currentColumn] = i;
 
-        // check which move to make
+        // check to see if its possible to make a move
+        movePossible = false;
+
         for (int j = 0; j < 8; j++) {
             if (currentRow + vertical[j] >= 0 && currentRow + vertical[j] < 8 &&
                 currentColumn + horizontal[j] >= 0 &&
                 currentColumn + horizontal[j] < 8 &&
                 board[currentRow + vertical[j]]
                      [currentColumn + horizontal[j]] == 0) {
-                currentRow += vertical[j];
-                currentColumn += horizontal[j];
+                movePossible = true;
+                break;
+            }
+        }
+        if (!movePossible) {
+            std::cout << "Failed to find a move at move " << i << std::endl;
+            break;
+        }
+
+        // Keep rolling until we land on a legal unvisited move.
+        while (true) {
+            roll = std::rand() % 8;
+            if (currentRow + vertical[roll] >= 0 &&
+                currentRow + vertical[roll] < 8 &&
+                currentColumn + horizontal[roll] >= 0 &&
+                currentColumn + horizontal[roll] < 8 &&
+                board[currentRow + vertical[roll]]
+                     [currentColumn + horizontal[roll]] == 0) {
+                currentRow += vertical[roll];
+                currentColumn += horizontal[roll];
                 break;
             }
         }
     }
     printBoard(board);
 
-    // 2
+    // 4
+    // 1000 trials
+    int trials[1000];
+
+    for (int i = 0; i < 1000; i++) {
+        // reset
+        board = {0};
+        currentRow = 0;
+        currentColumn = 0;
+
+        // make 64 moves
+        for (int move = 1; move <= 64; move++) {
+            // mark current position
+            // if it doesn't = 0 it has already been set and failed to find a
+            // move
+            if (board[currentRow][currentColumn] != 0) {
+                trials[i] = move;
+                break;
+            }
+            board[currentRow][currentColumn] = move;
+
+            // check to see if its possible to make a move
+            movePossible = false;
+
+            for (int j = 0; j < 8; j++) {
+                if (currentRow + vertical[j] >= 0 &&
+                    currentRow + vertical[j] < 8 &&
+                    currentColumn + horizontal[j] >= 0 &&
+                    currentColumn + horizontal[j] < 8 &&
+                    board[currentRow + vertical[j]]
+                         [currentColumn + horizontal[j]] == 0) {
+                    movePossible = true;
+                    break;
+                }
+            }
+            if (!movePossible) {
+                trials[i] = move;
+                break;
+            }
+
+            // Keep rolling until we land on a legal unvisited move.
+            while (true) {
+                roll = std::rand() % 8;
+                if (currentRow + vertical[roll] >= 0 &&
+                    currentRow + vertical[roll] < 8 &&
+                    currentColumn + horizontal[roll] >= 0 &&
+                    currentColumn + horizontal[roll] < 8 &&
+                    board[currentRow + vertical[roll]]
+                         [currentColumn + horizontal[roll]] == 0) {
+                    currentRow += vertical[roll];
+                    currentColumn += horizontal[roll];
+                    break;
+                }
+            }
+        }
+    }
+
+    // print results and maximum
+    int maximum = 0;
+    for (int i = 0; i < 1000; i++) {
+        if (trials[i] > maximum) {
+            maximum = trials[i];
+        }
+        std::cout << "Trial " << i + 1 << ": " << trials[i] << " moves"
+                  << std::endl;
+    }
+    std::cout << "The maximum move number was: " << maximum << std::endl;
+
+    // 5
+    // old code
     // array of accesibility
     std::array<std::array<int, 8>, 8> access{
         2, 3, 4, 4, 4, 4, 3, 2, 3, 4, 6, 6, 6, 6, 4, 3, 4, 6, 8, 8, 8, 8,
@@ -95,9 +188,22 @@ int main() {
                 board[currentRow][currentColumn] = i;
                 // if this if runs it has succeeded
                 if (i == 64) {
-                    std::cout << "(" << startingRow << "," << startingColumn
-                              << ")" << " was a success!" << std::endl;
-                    successes++;
+                    // need to check if closed tour
+                    // this logic is a little gross
+                    for (int j = 0; j < 8; j++) {
+                        if (currentRow + vertical[j] >= 0 &&
+                            currentRow + vertical[j] < 8 &&
+                            currentColumn + horizontal[j] >= 0 &&
+                            currentColumn + horizontal[j] < 8 &&
+                            board[currentRow + vertical[j]]
+                                 [currentColumn + horizontal[j]] == 1) {
+                            std::cout << "(" << startingRow << ","
+                                      << startingColumn << ")"
+                                      << " was a closed tour!" << std::endl;
+                            successes++;
+                            break;
+                        }
+                    }
                 }
 
                 // board has been set, now change the accessibility of the
@@ -148,5 +254,5 @@ int main() {
         }
     }
 
-    std::cout << "There are " << successes << " possibilities." << std::endl;
+    std::cout << "There are " << successes << " closed tours." << std::endl;
 }
